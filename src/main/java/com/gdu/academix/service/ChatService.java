@@ -1,5 +1,6 @@
 package com.gdu.academix.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public interface ChatService {
   
   // 1:1 채팅방 생성
   ResponseEntity<Map<String, Object>> addOneToOneChatroom(Map<String, Object> params);
+  
+  // 채팅방 참여자 넣기
+  Map<String, Object> insertNewParticipateList(Map<String, Object> params);
   
   // 그룹 채팅방 생성
   ResponseEntity<Map<String, Object>> addGroupChatroom(Map<String, Object> params);

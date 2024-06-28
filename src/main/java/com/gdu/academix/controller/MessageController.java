@@ -61,7 +61,7 @@ public class MessageController {
         
         return message;
 
-      } else {
+      } else if(message.getMessageType().equals(MessageType.UPDATE)){
         // 메시지를 받으면 chatroom_participate_t의 participate_status 변경해주어야 함.
         // DB로 보낼 map 생성
         Map<String, Object> params = Map.of("chatroomNo", message.getChatroomNo(), "participantNo", message.getSenderNo(), "participateStatus", Integer.parseInt(message.getMessageContent()));
@@ -73,7 +73,10 @@ public class MessageController {
         } else {
           return message;
         }
-      } 
+      } else {
+        // 초대
+        return message;
+      }
     } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException("Error handling one-to-one chat message");
@@ -84,6 +87,8 @@ public class MessageController {
   @MessageMapping("/group/{chatroomNo}") // 클라이언트가 해당 url로 메시지 보냄.
   @SendTo("/queue/{chatroomNo}")    // 해당 url 구독중인 클라이언트에게 메시지 보냄.
   public MessageDto GroupChat(@DestinationVariable int chatroomNo, MessageDto message) {
+    
+    System.out.println("받은 메시지: " + message);
     
     try {
       
@@ -112,7 +117,7 @@ public class MessageController {
         
         return message;
       
-      } else {
+      } else if(message.getMessageType().equals(MessageType.UPDATE)){
         
         // 메시지를 받으면 chatroom_participate_t의 participate_status 변경해주어야 함.
         // DB로 보낼 map 생성
@@ -125,7 +130,10 @@ public class MessageController {
         } else { 
           return message;
         }
-      } 
+      } else {
+        // 초대
+        return message;
+      }
       
     } catch (Exception e) {
       e.printStackTrace();
@@ -135,6 +143,8 @@ public class MessageController {
 
   @MessageMapping("/notify")
   public void notifyUser(MessageDto message, CustomPrincipal customPrincipal) {
+    
+    System.out.println("받은 알림 메시지: " + message);
     
       if(message.getRecipientNoList() == null) {
         message.setRecipientNoList(new ArrayList<>());
@@ -196,5 +206,55 @@ public class MessageController {
         }
       }
   }
+  
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  /*
+   * @MessageMapping("info")
+   * 
+   * @SendToUser("/queue/info") // 1:1로 메시지 보낼때 사용함. public String info(String
+   * message, SimpMessageHeaderAccessor messageHeaderAccessor) { EmployeesDto
+   * talker = (EmployeesDto)
+   * messageHeaderAccessor.getSessionAttributes().get("user"); return message; }
+   * 
+   * @MessageMapping("chat") // 클라이언트가 chat 경로로 메시지 보낼 시..
+   * 
+   * @SendTo("/topic/message") // /topic/message라는 토픽을 구독하는 사용자들에게 메시지 전달 public
+   * String chat(String message) { return message; }
+   * 
+   * @MessageMapping("bye")
+   * 
+   * @SendTo("/topic/bye") // 1:n으로 메시지 뿌릴때 사용 public EmployeesDto bye(String
+   * message, SimpMessageHeaderAccessor messageHeaderAccessor) { EmployeesDto
+   * talker = (EmployeesDto)
+   * messageHeaderAccessor.getSessionAttributes().get("user"); return talker; }
+   */
   
 }

@@ -221,6 +221,60 @@ public class ChatServiceImpl implements ChatService {
     }  
   
   
+  // 채팅방 참여자 리스트로 받아서 추가하기
+  @Override
+  public Map<String, Object> insertNewParticipateList(Map<String, Object> params) {
+    
+    // 추가 참여자 직원 번호 리스트 가져오기
+    List<Integer> participantNoList = (List<Integer>) params.get("participantNoList");
+    int chatroomNo = Integer.parseInt(String.valueOf(params.get("chatroomNo")));
+    int employeeNo = Integer.parseInt(String.valueOf(params.get("employeeNo")));
+    
+    // 참여자 리스트 추가하기
+    int addParticipantCount = chatMapper.insertNewParticipateList(Map.of("participantNoList", participantNoList, "chatroomNo", chatroomNo));
+    
+    // 여기서...해당 CHATROOM_NO에 해당하는 참여자 번호를 가져온다.
+    // 그래서 참여자 번호 리스트의 수가 2 이상이면 TYPE을 GROUP으로 변경
+    int count = chatMapper.getChatroomParticipantCount(chatroomNo);
+    if(count > 2) {
+      chatMapper.updateChatroomType(Map.of("chatroomNo", chatroomNo, "chatroomType", "Group"));
+    } 
+    
+    // 참여자 리스트 직원 정보 가져오기
+    List<EmployeesDto> participantList = userMapper.getUserProfileList(participantNoList);
+    
+    StringBuilder builder = new StringBuilder();
+    for(int i = 0, size = participantList.size(); i < size; i++) {
+      builder.append(participantList.get(i).getName() + " " + participantList.get(i).getRank().getRankTitle() + "님");
+      if (i < size - 1) {
+        builder.append(", ");
+      }
+    }
+    builder.append("이 초대되었습니다.");
+    
+    String JoinMessage = builder.toString();
+    
+    // 1.2 메시지 객체 생성 후 추가하기
+    MessageDto message = MessageDto.builder()
+                                .messageType(MessageType.ADD)
+                                .messageContent(JoinMessage)
+                                .chatroomNo(chatroomNo)
+                                .senderNo(employeeNo)
+                             .build();
+    
+    int insertMessageCount = chatMapper.insertChatMessage(message);
+    
+    if(addParticipantCount == participantNoList.size()) {
+      return Map.of("addParticipantCount", addParticipantCount,
+                    "participantList", participantList,
+                    "insertMessageCount", insertMessageCount,
+                    "JoinMessage", JoinMessage);
+    } else {
+      return Map.of("error", "error");
+    }
+  }
+  
+  
   // 채팅 내역 가져오기
   @Override
   public ResponseEntity<Map<String, Object>> getChatMessageList(int chatroomNo, int page) {
@@ -295,6 +349,12 @@ public class ChatServiceImpl implements ChatService {
     // 2. map을 DB로 보낸다.
     int deleteCount = chatMapper.deleteParticipant(map);
     
+    // 만약에...참여자수가 2명 이하라면.. type을 OneToOne으로 변경한다.
+    int count = chatMapper.getChatroomParticipantCount(chatroomNo);
+    if(count < 2) {
+      chatMapper.updateChatroomType(Map.of("chatroomNo", chatroomNo, "chatroomType", "OneToOne"));
+    }
+    
     // 3. 채팅방 퇴장 메시지를 만든다.
     EmployeesDto me = userMapper.getUserProfileByNo(participantNo);
 
@@ -310,7 +370,6 @@ public class ChatServiceImpl implements ChatService {
     return ResponseEntity.ok(Map.of("deleteCount", deleteCount,
                                     "chatroom", chatroom,
                                     "LeaveMessage", LeaveMessage));
-    
     
     
   }

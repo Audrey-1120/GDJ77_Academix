@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class MessageDto {
   
   public enum MessageType{
-    CHAT, JOIN, LEAVE, UPDATE, UPDATE_READ_STATUS;
+    CHAT, JOIN, LEAVE, UPDATE, ADD;
   }
   
   private MessageType messageType;

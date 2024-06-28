@@ -277,7 +277,6 @@
 	        $('.alert-menu-sub').text('알람을 모두 확인했어요!');
 	        $('.messages-menu span').text(0);
 	        $('.messages-menu span').css('display', 'none');
-	        $('.contacts-list i.fa-circle').remove();
 	        
         } else {
         	return;

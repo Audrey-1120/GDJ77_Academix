@@ -60,6 +60,39 @@
      )
   </insert>
   
+  <!-- participantNo 리스트로 받아서 넣기 -->
+	<update id="insertNewParticipateList" parameterType="map">
+	  INSERT INTO CHATROOM_PARTICIPATE_T (
+	    CHATROOM_PARTICIPATE_NO,
+	    CHATROOM_NO,
+	    PARTICIPANT_NO,
+	    PARTICIPATE_STATUS
+	  )
+	  SELECT 
+	    CHATROOM_PARTICIPATE_SEQ.NEXTVAL,
+	    #{chatroomNo},
+	    participantNo,
+	    0
+	  FROM (
+	    <foreach collection="participantNoList" item="participantNo" separator=" UNION ALL ">
+	      SELECT #{participantNo} AS participantNo FROM DUAL
+	    </foreach>
+	  )
+	</update>
+	
+	<!-- 채팅방 타입 변경 -->
+	<update id="updateChatroomType" parameterType="map">
+	  UPDATE CHATROOM_T
+	     SET CHATROOM_TYPE = #{chatroomType}
+	   WHERE CHATROOM_NO = #{chatroomNo}
+	</update>
+
+
+
+
+
+	  
+  
   <!-- 메시지 데이터 넣기 -->
   <insert id="insertChatMessage"
   				parameterType="MessageDto">

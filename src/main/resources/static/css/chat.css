@@ -360,6 +360,19 @@ table {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
+
+.AddChatMessage {
+  background-color: #F0F4F6;
+  text-align: center;
+  padding: 6px;
+  border-radius: 15px;
+  max-width: 400px;
+  margin: 0 auto;
+  font-size: 1.18rem;
+  color: #707070;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
 		
 		/* 채팅 목록 */
 .chatroom-main {
@@ -491,4 +504,14 @@ table {
   border-radius: 0 0 50% 50%;
   width: 32px;
   height: 30px;
+}
+
+.addMember-body {
+  max-height: 30rem;
+  min-height: 30rem;
+  overflow: auto;
+}
+
+.add-newMember {
+  cursor: pointer;	
 }

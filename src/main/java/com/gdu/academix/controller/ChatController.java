@@ -51,6 +51,11 @@ public class ChatController {
     return chatService.addOneToOneChatroom(params);
   }
   
+  @PostMapping(value="/insertNewParticipateList.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> insertNewParticipateList(@RequestBody Map<String, Object> params) {
+    return ResponseEntity.ok(Map.of("insertNewParticipate", chatService.insertNewParticipateList(params)));
+  }
+  
   // 그룹 채팅방 생성
   @PostMapping(value="/insertNewGroupChatroom.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> insertNewGroupChatroom(@RequestBody Map<String, Object> params) {
@@ -60,6 +65,7 @@ public class ChatController {
   // 채팅 내역 가져오기
   @GetMapping(value="/getChatMessageList.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> getChatMessageList(@RequestParam int chatroomNo, @RequestParam int page) {
+    System.out.println("chatMessageList" + chatService.getChatMessageList(chatroomNo, page));
     return chatService.getChatMessageList(chatroomNo, page);
   }
   
