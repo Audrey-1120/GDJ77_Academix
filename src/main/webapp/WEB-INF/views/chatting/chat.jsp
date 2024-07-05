@@ -257,18 +257,19 @@
   </div>
   <!-- /.content-wrapper -->
   
+  <script src="${contextPath}/js/chatMember.js?dt=${dt}"></script>
+  
   <script>
   
-  // stomp 연결 전역 객체
+    // stomp 연결 전역 객체
 	let stompClient = null;  
 	let currentChatroomNo = null;
 	let currentChatroomType = null;
   
-  // 무한 스크롤 페이지
-  let page = 1;
+    // 무한 스크롤 페이지
+    let page = 1;
 	let chatMessageTotalPage = 0;
 	let gChatroomNo = 0;
-	
 	
 	// 입력 데이터 날짜 생성
 	let gPreviousDate = null;
@@ -663,7 +664,7 @@
 	
 		// STOMP 연결
 	const fnConnect = (chatroomType) => {
-		  let employeeNo = ${sessionScope.user.employeeNo};
+		let employeeNo = ${sessionScope.user.employeeNo};
 	    let socket = new SockJS("/ws-stomp?employeeNo=" + employeeNo);
 	    stompClient = Stomp.over(socket);
 	
@@ -672,7 +673,7 @@
 	        stompClient.subscriptionPaths = {};
 	    }
 	    
-	    stompClient.connect({employeeNo: ${sessionScope.user.employeeNo}}, (frame) => {
+	    stompClient.connect({}, (frame) => {
 	        //console.log('소켓 연결 성공: ' + frame);
 	
 	        let chatroomNo = $('.chat-box-title').data('chatroom-no');  // (1)
@@ -686,7 +687,6 @@
 	        // 새로운 채팅방 번호 저장
 	        currentChatroomNo = chatroomNo;
 	        currentChatroomType = chatroomType;
-	        
 	        
 	        // 저장된 채팅 불러오기
 	        fnGetChatMessage(chatroomNo);  // (2)
@@ -1131,14 +1131,14 @@
 				.then(senderNoList => {
 					
 					if($('.chat-memberProfileList').find('input').length !== senderNoList.length) {
-			      fetchSenderUserData(senderNoList).then(() => { // fetchSenderUserData가 완료되면 실행
-	          SetEmployeeMessageProfile(chatMessageList, resData.MessageReadStatusList); // (16)
-	          fnAddParticipateTab(chatroomNo);
-			      });
+			          fetchSenderUserData(senderNoList).then(() => { // fetchSenderUserData가 완료되면 실행
+	                  SetEmployeeMessageProfile(chatMessageList, resData.MessageReadStatusList); // (16)
+	                  fnAddParticipateTab(chatroomNo);
+			          });
 					} else {
-		      	SetEmployeeMessageProfile(chatMessageList, resData.MessageReadStatusList); // (16)
-						fnAddParticipateTab(chatroomNo);
-						return;
+		      	       SetEmployeeMessageProfile(chatMessageList, resData.MessageReadStatusList); // (16)
+					   fnAddParticipateTab(chatroomNo);
+					   return;
 					}
 				})
  			} else {

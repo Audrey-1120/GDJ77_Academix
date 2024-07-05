@@ -23,16 +23,16 @@
 	  let globalSocket = new SockJS("/ws-stomp?employeeNo=" + employeeNo);
 	  globalStompClient = Stomp.over(globalSocket); // STOMP 클라이언트 객체 저장
 	  
-	  
 	  globalStompClient.connect({}, (frame) => {
 		  
+		  console.log("Connected:", frame);
 		  globalStompClient.subscribe('/user/queue/notifications', (notification) => { // notification은 수신된 메시지를 가리키는 객체
 			  
 			  const message = JSON.parse(notification.body);
 			  fnShowAlert(message);
 			  fnShowChatroomIcon(message);
 			  //showNotification(JSON.parse(notification.body));
-		  }, {id: 'alert-' + ${sessionScope.user.employeeNo}});
+		  }, {id: 'alert-' + employeeNo});
 	  }, function(error) {
 		  console.log('WebSocket connection error: ' + error);
 	  });

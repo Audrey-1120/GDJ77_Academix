@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.Map;
 
 import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -17,11 +18,8 @@ public class CustomHandshakeHanlder extends DefaultHandshakeHandler {
       Map<String, Object> attributes) {
     
     // 수정하기!!
-    String uri = request.getURI().toString();
-    Map<String, String> queryParams = UriComponentsBuilder.fromUriString(uri).build().getQueryParams().toSingleValueMap();
-    String employeeNo = queryParams.get("employeeNo");
+    String employeeNo = UriComponentsBuilder.fromUri(request.getURI()).build().getQueryParams().getFirst("employeeNo");
     System.out.println("Handshake employeeNo: " + employeeNo);
-    
     
     //String sessionId = UUID.randomUUID().toString();
     return new CustomPrincipal("user-" + employeeNo);
