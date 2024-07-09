@@ -361,4 +361,12 @@
             defaultImg.classList.add('user-image');
         }
     }
+    
+    const fnGetContextPath = ()=> {
+   	  const host = location.host;  /* localhost:8081 */
+   	  const url = location.href;   /* http://localhost:8081/mvc/getDate.do */
+   	  const begin = url.indexOf(host) + host.length;
+   	  const end = url.indexOf('/', begin + 1);
+   	  return url.substring(begin, end);
+   	}
 </script>

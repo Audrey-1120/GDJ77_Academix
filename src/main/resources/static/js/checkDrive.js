@@ -12,15 +12,6 @@
 // 전역변수
 var employeeNo = document.querySelector('input[name="employeeNo"]').value;
 
-
-const fnGetContextPath = ()=>{
-  const host = location.host;  /* localhost:8081 */
-  const url = location.href;   /* http://localhost:8081/mvc/getDate.do */
-  const begin = url.indexOf(host) + host.length;
-  const end = url.indexOf('/', begin + 1);
-  return url.substring(begin, end);
-}
-
 /*************************************************
  * 함수명 : fnCheckDrive
  * 설  명 : 드라이브 유무 확인
