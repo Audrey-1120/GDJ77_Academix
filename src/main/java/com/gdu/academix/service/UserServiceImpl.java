@@ -42,104 +42,6 @@ public class UserServiceImpl implements UserService {
     return new ResponseEntity<>(Map.of("enableEmail", enableEmail)
         , HttpStatus.OK);
   }
-
- 
-
-  
-  @Transactional(readOnly=true)
-  @Override
-  public ResponseEntity<Map<String, Object>> sendCode(Map<String, Object> params) {
-    
-    /*
-     * 구글 앱 비밀번호 설정 방법
-     * 1. 구글에 로그인한다.
-     * 2. [계정] - [보안]
-     * 3. [Google에 로그인하는 방법] - [2단계 인증]을 사용 설정한다.
-     * 4. 검색란에 "앱 비밀번호"를 검색한다.
-     * 5. 앱 이름을 "academix"으로 작성하고 [만들기] 버튼을 클릭한다.
-     * 6. 16자리 비밀번호가 나타나면 복사해서 사용한다. (비밀번호 사이 공백은 모두 제거한다.)
-     */
-    
-    // 인증코드 생성
-    String code = MySecurityUtils.getRandomString(6, true, true);
-    
-    // 개발할 때 인증코드 찍어보기
-    System.out.println("인증코드 : " + code);
-    
-    // 메일 보내기
-    myJavaMailUtils.sendMail((String)params.get("email")
-        , "academix 인증요청"
-        , "<div>인증코드는 <strong>" + code + "</strong>입니다.");
-    
-    // 인증코드 입력화면으로 보내주는 값
-    return new ResponseEntity<>(Map.of("code", code)
-        , HttpStatus.OK);
-    
-  }
-  
-  @Override
-  public void signup(HttpServletRequest request, HttpServletResponse response) {
-
-    // 전달된 파라미터
-    String email = request.getParameter("email");
-    String pw = MySecurityUtils.getSha256(request.getParameter("pw"));
-    String name = MySecurityUtils.getPreventXss(request.getParameter("name"));
-    String mobile = request.getParameter("mobile");
-    String gender = request.getParameter("gender");
-    String event = request.getParameter("event");
-    
-    // Mapper 로 보낼 UserDto 객체 생성
-    UserDto user = UserDto.builder()
-                      .email(email)
-                      .pw(pw)
-                      .name(name)
-                      .mobile(mobile)
-                      .gender(gender)
-                      .eventAgree(event == null ? 0 : 1)
-                    .build();
-    
-    // 회원 가입
-    int insertCount = userMapper.insertUser(user);
-    
-    // 응답 만들기 (성공하면 sign in 처리하고 /main.do 이동, 실패하면 뒤로 가기)
-    try {
-      
-      response.setContentType("text/html");
-      PrintWriter out = response.getWriter();
-      out.println("<script>");
-      
-      // 가입 성공
-      if(insertCount == 1) {
-       
-        // Sign In 및 접속 기록을 위한 Map
-        Map<String, Object> params = Map.of("email", email
-                                          , "pw", pw
-                                          , "ip", request.getRemoteAddr()
-                                          , "userAgent", request.getHeader("User-Agent")
-                                          , "sessionId", request.getSession().getId());
-       
-        // Sign In (세션에 user 저장하기)
-        request.getSession().setAttribute("user", userMapper.getUserByMap(params));
-       
-        // 접속 기록 남기기
-        userMapper.insertAccessHistory(params);
-       
-        out.println("alert('회원 가입되었습니다.');");
-        out.println("location.href='" + request.getContextPath() + "/main.page';");
-        
-      // 가입 실패
-      } else {
-        out.println("alert('회원 가입이 실패했습니다.');");
-        out.println("history.back();");
-      }
-      out.println("</script>");
-      out.flush();
-      out.close();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    
-  }
   
   @Override
   public void leave(HttpServletRequest request, HttpServletResponse response) {
@@ -182,33 +84,6 @@ public class UserServiceImpl implements UserService {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    
-  }
-  
-  @Transactional(readOnly=true)
-  @Override
-  public String getRedirectURLAfterSignin(HttpServletRequest request) {
-    
-    // Sign In 페이지 이전의 주소가 저장되어 있는 Request Header 의 referer 값 확인
-    String referer = request.getHeader("referer");
-    
-    // referer 로 돌아가면 안 되는 예외 상황 (아이디/비밀번호 찾기 화면, 가입 화면 등)
-    String[] excludeURLs = {"/findId.page", "/findPw.page", "/signup.page", "/upload/edit.do"};
-    
-    // Sign In 이후 이동할 url
-    String url = referer;
-    if(referer != null) {
-      for(String excludeURL : excludeURLs) {
-        if(referer.contains(excludeURL)) {
-          url = request.getContextPath() + "/main.page";
-          break;
-        }
-      }
-    } else {
-      url = request.getContextPath() + "/main.page";
-    }
-    
-    return url;
     
   }
   
@@ -314,15 +189,6 @@ public class UserServiceImpl implements UserService {
     // 리스트를 돌면서 반환한 객체를 저장할 리스트 생성
     List<EmployeesDto> employeeList = new ArrayList<>();
     
-    // employeeNoList를 반복문으로 돌면서 반환 객체를 employeeList에 저장
-    /*
-     * for(int i = 0; i < employeeNoList.size(); i++) {
-     * employeeList.add(userMapper.getUserProfileByNo(employeeList.get(i).
-     * getEmployeeNo())); }
-     * 
-     * return ResponseEntity.ok(Map.of("employeeList", employeeList));
-     */
-
     // employeeNoList를 반복문으로 돌면서 반환 객체를 employeeList에 저장
     for (Integer employeeNo : employeeNoList) {
        employeeList.add(userMapper.getUserProfileByNo(employeeNo));

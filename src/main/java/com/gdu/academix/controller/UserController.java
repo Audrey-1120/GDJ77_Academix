@@ -37,11 +37,13 @@ public class UserController {
     userService.leave(request, response);
   }
 
+  // 로그인 페이지 이동
   @GetMapping("/signin.page")
   public String signinPage(HttpServletRequest request) {
     return "user/signin";
   }
   
+  // 로그인
   @PostMapping("/signin.do")
   public void signin(HttpServletRequest request, HttpServletResponse response) {
     userService.signin(request, response);

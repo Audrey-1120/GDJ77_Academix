@@ -51,11 +51,6 @@
       </div>
       <div class="row">
         <div class="col-xs-8">
-<!--           <div class="checkbox icheck">
-            <label>
-              <input type="checkbox"> 아이디 저장하기
-            </label>
-          </div> -->
         </div>
         <!-- /.col -->
         <div class="col-xs-4">
@@ -64,16 +59,6 @@
         <!-- /.col -->
       </div>
     </form>
-<!--     <div class="social-auth-links text-center">
-      <p>- OR -</p>
-      <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Sign in using
-        Facebook</a>
-      <a href="#" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i> Sign in using
-        Google+</a>
-    </div>   -->  
-
-
-    <!-- <a href="#">I forgot my password</a><br> -->
 
   </div>
   <!-- /.login-box-body -->
