@@ -193,7 +193,7 @@
 		DELETE
   		FROM CHATROOM_T
  		 WHERE CHATROOM_NO IN (SELECT C.CHATROOM_NO
-		                         FROM CHATROOM_T C LEFT JOIN CHATROOM_PARTICIPATE_T P
+		                         FROM CHATROOM_T C LEFT OUTER JOIN CHATROOM_PARTICIPATE_T P
 		                           ON C.CHATROOM_NO = P.CHATROOM_NO
 		                        GROUP BY C.CHATROOM_NO
 		                       HAVING COUNT(P.PARTICIPANT_NO) = 0)
@@ -204,7 +204,7 @@
 	  DELETE
 	    FROM MESSAGE_T
 	   WHERE CHATROOM_NO IN (SELECT C.CHATROOM_NO
-	                           FROM CHATROOM_T C LEFT JOIN CHATROOM_PARTICIPATE_T P
+	                           FROM CHATROOM_T C LEFT OUTER JOIN CHATROOM_PARTICIPATE_T P
 	                             ON C.CHATROOM_NO = P.CHATROOM_NO
 	                          GROUP BY C.CHATROOM_NO
 	                         HAVING COUNT(P.PARTICIPANT_NO) = 0)
