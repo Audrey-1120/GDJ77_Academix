@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gdu.academix.dto.ChatroomDto;
 import com.gdu.academix.dto.ChatroomParticipateDto;
@@ -19,6 +20,7 @@ import com.gdu.academix.mapper.ChatMapper;
 import com.gdu.academix.mapper.UserMapper;
 import com.gdu.academix.utils.MyPageUtils;
 
+@Transactional
 @Service
 public class ChatServiceImpl implements ChatService {
   
@@ -44,7 +46,7 @@ public class ChatServiceImpl implements ChatService {
                                   .messageType(message.getMessageType())
                                   .messageContent(replaceMessageContent)
                                   .chatroomNo(message.getChatroomNo())
-                                  .senderNo(message.getSenderNo())
+                                  .senderNo(message.getSenderNo()) 
                                 .build();
     
     // DB에 메시지 저장
@@ -63,6 +65,7 @@ public class ChatServiceImpl implements ChatService {
   }
   
   // 1:1 채팅방 여부 확인
+  @Transactional(readOnly = true)
   @Override
   public ChatroomDto isOneToOneChatroomExits(int loginUserNo, int chatUserNo) {
     Map<String, Object> map = Map.of("loginUserNo", loginUserNo, "chatUserNo", chatUserNo);
@@ -74,6 +77,7 @@ public class ChatServiceImpl implements ChatService {
     return chatroom;
   }
   
+  // 1:1 채팅방 생성
   @Override
   public ResponseEntity<Map<String, Object>> addOneToOneChatroom(Map<String, Object> params) {
 
@@ -129,9 +133,9 @@ public class ChatServiceImpl implements ChatService {
   }
   
   
-  
+  // 그룹 채팅방 추가
   @Override
-    public ResponseEntity<Map<String, Object>> addGroupChatroom(Map<String, Object> params) {
+  public ResponseEntity<Map<String, Object>> addGroupChatroom(Map<String, Object> params) {
     
       // 보낸 데이터 가져오기
       int loginUserNo = Integer.parseInt(String.valueOf(params.get("loginUserNo")));
@@ -276,12 +280,13 @@ public class ChatServiceImpl implements ChatService {
   
   
   // 채팅 내역 가져오기
+  @Transactional(readOnly = true)
   @Override
   public ResponseEntity<Map<String, Object>> getChatMessageList(int chatroomNo, int page) {
 
     try {
       
-     // 채팅방 메시지 전체 개수
+      // 채팅방 메시지 전체 개수
       int total = chatMapper.getChatMessageCount(chatroomNo);
       
       // 한번에 가지고올 메시지 개수
@@ -309,7 +314,8 @@ public class ChatServiceImpl implements ChatService {
   }
   
   
-  
+  // 채팅방 목록 가져오기
+  @Transactional(readOnly = true)
   @Override
   public ResponseEntity<Map<String, Object>> getChatList(int employeeNo) {
     List<ChatroomDto> chatroomList = chatMapper.getChatList(employeeNo);
@@ -323,22 +329,28 @@ public class ChatServiceImpl implements ChatService {
     return ResponseEntity.ok(Map.of("chatroomList", chatroomList));
   }
   
+  // 채팅방 번호로 채팅방 가져오기
+  @Transactional(readOnly = true)
   @Override
   public ResponseEntity<Map<String, Object>> getChatroomByChatroomNo(int chatroomNo) {
     return ResponseEntity.ok(Map.of("chatroom", chatMapper.getChatroomByChatroomNo(chatroomNo)));
   }
   
+  // 채팅방 참여자 정보 가져오기
+  @Transactional(readOnly = true)
   @Override
   public ResponseEntity<Map<String, Object>> getChatroomParticipantList(int chatroomNo) {
     List<ChatroomParticipateDto> employeeNoList = chatMapper.getChatroomParticipantList(chatroomNo);
     return ResponseEntity.ok(Map.of("employeeNoList", employeeNoList));
   }
   
+  // 채팅방 참여자 상태 변경
   @Override
   public int updateParticipateStatus(Map<String, Object> params) {
     return chatMapper.updateParticipateStatus(params);
   }
   
+  // 채팅방 나가기
   @Override
   public ResponseEntity<Map<String, Object>> deleteParticipant(int chatroomNo, int participantNo) {
 
@@ -374,6 +386,7 @@ public class ChatServiceImpl implements ChatService {
     
   }
   
+  // 채팅인원 0명인 채팅방 삭제
   @Override
   public void deleteNoParticipateChatroom() {
     
@@ -383,6 +396,7 @@ public class ChatServiceImpl implements ChatService {
     chatMapper.deleteNoParticipateChatroom();
   }
   
+  // 채팅방 이름 변경하기
   @Override
   public int updateChatroomTitle(Map<String, Object> params) {
     
@@ -401,10 +415,7 @@ public class ChatServiceImpl implements ChatService {
   } catch (Exception e) {
     e.printStackTrace();
   }
-  
-  return 0;
-    
-
+    return 0;
   }
   
   

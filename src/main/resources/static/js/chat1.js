@@ -65,12 +65,9 @@
       // input 태그 삭제
       $('.searchInput-cover').remove();
       // #memberArea div 요소 삭제
-      //$('.chat-member #memberArea').remove();
       $('.chat-member-title').text('채팅 목록');
       
       // 먼저 chat-member 요소 추가
-      //$('.chat-member-title').after('<div class="box-body chat-member"></div>');
-      
       $('.chat-member').append('<ul class="contacts-list"></ul>');
       
       
