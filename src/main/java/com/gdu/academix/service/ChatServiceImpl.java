@@ -313,7 +313,6 @@ public class ChatServiceImpl implements ChatService {
     
   }
   
-  
   // 채팅방 목록 가져오기
   @Transactional(readOnly = true)
   @Override

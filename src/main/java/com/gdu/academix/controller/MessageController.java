@@ -43,7 +43,7 @@ public class MessageController {
 
   // 1:1
   @MessageMapping("/one/{chatroomNo}") // 클라이언트가 해당 url로 메시지 보냄.
-  @SendTo("/topic/{chatroomNo}")    // 해당 url 구독중인 클라이언트에게 메시지 보냄.
+  @SendTo("/queue/{chatroomNo}")    // 해당 url 구독중인 클라이언트에게 메시지 보냄.
   public MessageDto OneToOneChat(@DestinationVariable int chatroomNo, MessageDto message) {
     
     System.out.println("받은 메시지: " + message);
@@ -85,7 +85,7 @@ public class MessageController {
   
   // 단체
   @MessageMapping("/group/{chatroomNo}") // 클라이언트가 해당 url로 메시지 보냄.
-  @SendTo("/queue/{chatroomNo}")    // 해당 url 구독중인 클라이언트에게 메시지 보냄.
+  @SendTo("/topic/{chatroomNo}")    // 해당 url 구독중인 클라이언트에게 메시지 보냄.
   public MessageDto GroupChat(@DestinationVariable int chatroomNo, MessageDto message) {
     
     System.out.println("받은 메시지: " + message);

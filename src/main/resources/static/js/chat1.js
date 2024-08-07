@@ -425,7 +425,7 @@
 	        // 저장된 채팅 불러오기
 	        fnGetChatMessage(chatroomNo);  // (2)
 	        
-	        const subscriptionPath = chatroomType === 'OneToOne' ? '/topic/' + chatroomNo : '/queue/' + chatroomNo;
+	        const subscriptionPath = chatroomType === 'OneToOne' ? '/queue/' + chatroomNo : '/topic/' + chatroomNo;
 	
 	        //console.log('구독되었습니다.');
 	        const subscription = stompClient.subscribe(subscriptionPath, (chatroomMessage) => {
@@ -469,7 +469,7 @@
 	 	
 	const fnDisconnect = (chatroomType, chatroomNo) => {
 	    if (stompClient !== null) {
-	        const subscriptionPath = chatroomType === 'OneToOne' ? '/topic/' + chatroomNo : '/queue/' + chatroomNo;
+	        const subscriptionPath = chatroomType === 'OneToOne' ? '/queue/' + chatroomNo : '/topic/' + chatroomNo;
 	        
 	        // 기존 구독 해지
 	        if (stompClient.subscriptionPaths && stompClient.subscriptionPaths[subscriptionPath]) {

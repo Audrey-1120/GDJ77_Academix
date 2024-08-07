@@ -205,8 +205,8 @@
 		      timerId = setTimeout(() => {
 		    	  
 		        let scrollTop = $('.chat-body').scrollTop(); // 모달 내부의 스크롤 위치 - scrollTop
-		        let modalHeight = $('.chat-body').outerHeight(); // 모달의 전체 높이 - view
-		        let scrollHeight = $('.chat-body').prop('scrollHeight'); // 모달 내부의 스크롤 가능한 영역의 높이 - document
+		        //let modalHeight = $('.chat-body').outerHeight(); // 모달의 전체 높이 - view
+		        //let scrollHeight = $('.chat-body').prop('scrollHeight'); // 모달 내부의 스크롤 가능한 영역의 높이 - document
 		      
 		        if(scrollTop <= 400) {  
 		          if (page > chatMessageTotalPage) {
@@ -485,7 +485,7 @@
         			// 방 참여자 번호리스트 보냄(이때 나도 추가) - 화면 input에 추가해야 하기 때문
 	    			  const beforeEmployeeList = $('#hiddenList').val();
 	    			  const employeeList = JSON.parse(beforeEmployeeList).map(Number);
-	    			  const userEmployeeNo = Number('currentEmployeeNo');
+	    			  const userEmployeeNo = Number(currentEmployeeNo);
 	    			  employeeList.push(userEmployeeNo);
 	    			  
 	    			  
