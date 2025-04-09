@@ -8,10 +8,6 @@
    <jsp:param value="채팅" name="title"/>
  </jsp:include>
 
-
-<!-- Font Awesome 5.15.4 (unchanged as it's already the latest stable version for this specific major version) -->
-<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" /> -->
-
 <!-- jsTree 3.3.12 (unchanged as it's the latest stable version) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
 
@@ -39,21 +35,15 @@
 	moment.locale('ko');  
 </script>
   
-  <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
         채팅
-        <!-- <small>it all starts here</small> -->
       </h1>
     </section>
 
-    <!-- Main content -->
     <section class="content chat-content">
 
-			<!-- 목록 화면 - 직원, 채팅목록 -->
-      <!-- Default box -->
       <div class="box member-box">
          <div class="box-header with-border">
 	         <div class="box-title-choice">
@@ -61,8 +51,6 @@
 	           <i class="fa fa-comment" style="cursor: pointer;"></i>
 	         </div>
 
-         
-         	 <!-- 닫기 버튼이랑 메뉴 버튼 -->
 	         <div class="box-tools pull-right">
 	           <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
 	             <i class="fa fa-minus"></i>
@@ -70,29 +58,23 @@
 	         </div>
           </div>
           <p class="chat-member-title">직원목록</p>
-<!--           <div class="searchInput-cover">
-            <input type="text" class="searchInput" placeholder="직원 검색">
-          </div> -->
-        <div class="box-body chat-member"></div> 
+        <div class="box-body chat-member"></div>
    			<div class="addChatroomBtn-cover">
 	       <button type="button" class="btn btn-block btn-primary addChatRoomBtn">+ 새 그룹채팅방 생성</button>
 	      </div>
       </div>
 
       
-            <!-- 프로필 조회 모달창 -->
       <div class="example-modal">
         <div class="modal fade" id="modal-default" style="display: none;">
           <div class="modal-dialog">
             <div class="modal-content">
-              <!-- 이 부분 프로필 조회, 채팅방 이름 변경에 따라 동적 생성 -->
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">프로필 조회</h4>
               </div>
               <div class="modal-body chatModal-body">
-              	<!-- 여기에 내용 넣으면 됨. -->
               	<div class="chat-modal-profile">
 	              	<img src="/dist/img/user8-128x128.jpg" class="img-circle" alt="User Image">
 	              	<p>이름</p>
@@ -107,28 +89,22 @@
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">닫기</button>
               </div>
             </div>
-            <!-- /.modal-content -->
           </div>
-          <!-- /.modal-dialog -->
         </div>
-        <!-- /.modal -->
       </div>
       
-            <!-- 그룹 채팅 생성모달창 -->
       <div class="example-modal">
         <div class="modal fade" id="modal-default2" style="display: none;">
           <div class="modal-dialog">
             <div class="modal-content">
-              <!-- 이 부분 프로필 조회, 채팅방 이름 변경에 따라 동적 생성 -->
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">새 채팅방 생성</h4>
               </div>
               <div class="modal-body chatModal-body">
-              	<!-- 여기에 내용 넣으면 됨. -->
               	<h4 class="modal-title">선택한 멤버</h4>
-              	<div class="selected-member-cover"> <!-- 여기에 선택 멤버 들어감. -->
+              	<div class="selected-member-cover">
               	</div> 
               	<input class="form-control newGroupChatroom-input" type="text" maxlength='20' placeholder="채팅방 이름을 작성해주세요">
               </div>
@@ -137,11 +113,8 @@
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">취소</button>
               </div>
             </div>
-            <!-- /.modal-content -->
           </div>
-          <!-- /.modal-dialog -->
         </div>
-        <!-- /.modal -->
       </div>
       
       <!-- 채팅방 이름 수정 -->
@@ -162,11 +135,8 @@
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">취소</button>
               </div>
             </div>
-            <!-- /.modal-content -->
           </div>
-          <!-- /.modal-dialog -->
         </div>
-        <!-- /.modal -->
       </div>
       
       <!-- 채팅방 참여자 초대 -->
@@ -174,16 +144,14 @@
         <div class="modal fade" id="modal-default4" style="display: none;">
           <div class="modal-dialog">
             <div class="modal-content">
-              <!-- 이 부분 프로필 조회, 채팅방 이름 변경에 따라 동적 생성 -->
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">채팅방 멤버 초대</h4>
               </div>
               <div class="modal-body chatModal-body addMember-body">
-              	<!-- 여기에 내용 넣으면 됨. -->
               	<h4 class="modal-title">초대할 멤버를 선택해주세요</h4>
-              	<div class="selected-addMember-cover"> <!-- 여기에 선택 멤버 들어감. -->
+              	<div class="selected-addMember-cover">
               	</div> 
               </div>
               <div class="modal-footer">
@@ -191,72 +159,51 @@
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">취소</button>
               </div>
             </div>
-            <!-- /.modal-content -->
           </div>
-          <!-- /.modal-dialog -->
         </div>
-        <!-- /.modal -->
       </div>
       
-      <!-- 채팅방 부분 -->
       <div class="chat-memberProfileList"></div>
-      
-      
       <div class="box chat-box" style="display: none">
         <div class="box-header with-border">
           <div class="chat-box-title">
-            <!-- <i class="fa fa-times"></i> -->
 						<span>채팅방 이름</span>
 						<span>2</span>
           </div>
-          
-          <!-- 상단 메뉴 -->
           <div class="box-tools pull-right">
-            <!-- 드롭박스.. -->
 	          <div class="dropdown">
-						  <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-expanded="true">
-						    <i class="fa fa-reorder"></i>
-						  </a>
-						  <div class="dropdown-menu chat-box-dropdown" aria-labelledby="dropdownMenuLink">
-					      <div class="title-row">
-					        <p>현재 활동중</p>
-					      </div>
-					      <div class="participant-body-row">
-								  <table class="participate_statusList">
-								    <tbody>
-								    </tbody>
-								  </table>
-					      </div>
-							  <div class="menu-row-cover">
-					        <p href="#" class="modify-chatTitle"><i class="fa fa-pencil-square-o"></i> 채팅방 이름 수정</p>
-					        <p href="#" class="add-newMember"><i class="fa fa-user-plus"></i> 새 참여자 초대하기</p>
-					        <p href="#" class="leave-chat"><i class="fa fa-sign-out"></i> 채팅방 나가기</p>
-							  </div>
-						  
-							  
-						  </div>
-						</div>
+              <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-expanded="true">
+                <i class="fa fa-reorder"></i>
+              </a>
+              <div class="dropdown-menu chat-box-dropdown" aria-labelledby="dropdownMenuLink">
+              <div class="title-row">
+                <p>현재 활동중</p>
+              </div>
+              <div class="participant-body-row">
+                  <table class="participate_statusList">
+                    <tbody>
+                    </tbody>
+                  </table>
+              </div>
+                  <div class="menu-row-cover">
+                <p href="#" class="modify-chatTitle"><i class="fa fa-pencil-square-o"></i> 채팅방 이름 수정</p>
+                <p href="#" class="add-newMember"><i class="fa fa-user-plus"></i> 새 참여자 초대하기</p>
+                <p href="#" class="leave-chat"><i class="fa fa-sign-out"></i> 채팅방 나가기</p>
+                  </div>
+              </div>
+            </div>
           </div>
         </div>
-        <!-- 메시지 창 -->
         <div class="box-body chat-body">
-        	<div class="chatMessage-body">
-        	
-        	
-        		<!-- 여기에 메시지 추가 -->
-        	
-        	</div>
-        	<!-- 입력창 -->
+        	<div class="chatMessage-body"></div>
          	<div class="chatMessage-input">
 	        	<textarea class="form-control chat-message-input" type="text" maxlength='500' placeholder="메시지를 입력해주세요" style="height: 35px;"></textarea>
 	        	<button type="submit" class="btn btn-primary chatMessage-btn"><i class="fa fa-send"></i></button>
         	</div>
         </div>      
     </section>
-    <!-- /.content -->
   </div>
-  <!-- /.content-wrapper -->
-  
+
   <script src="${contextPath}/js/chat1.js?dt=${dt}"></script>
   <script src="${contextPath}/js/chat2.js?dt=${dt}"></script>
   
@@ -272,12 +219,8 @@
 <!-- Morris.js charts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
 <script src="/plugins/morris/morris.min.js"></script>
-
 <!-- Sparkline -->
 <script src="/plugins/sparkline/jquery.sparkline.min.js"></script>
-<!-- jvectormap -->
-<!-- <script src="/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script> -->
-<!-- <script src="/plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script> -->
 <!-- jQuery Knob Chart -->
 <script src="/plugins/knob/jquery.knob.js"></script>
 <!-- daterangepicker -->

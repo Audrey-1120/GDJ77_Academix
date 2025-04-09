@@ -1,6 +1,20 @@
 @charset "UTF-8";
 
-    
+
+.selected-icon {
+  color: black;
+}
+
+.employee-profile {
+  width: 128px;
+  height: 128px;
+  object-fit: cover;
+}
+
+.employee-default {
+  width: 128px;
+  height: 128px;
+}
     
 .chat-content {
   height: 110vh;
