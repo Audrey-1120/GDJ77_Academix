@@ -1,26 +1,11 @@
 package com.gdu.academix.controller;
 
-import java.util.Map;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import com.gdu.academix.dto.ChatroomDto;
-import com.gdu.academix.dto.MessageDto;
-import com.gdu.academix.service.BlogService;
 import com.gdu.academix.service.ChatService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
-import lombok.RequiredArgsConstructor;
+import java.util.Map;
 
 @RequestMapping("/chatting")
 @Controller

@@ -17,6 +17,7 @@ public interface ChatMapper {
   
   // 1:1 채팅방 생성
   int insertNewChatroom(ChatroomDto chatroom);
+
   // 채팅방 참여자 넣기
   int insertNewParticipate(ChatroomParticipateDto participate);
   
@@ -25,22 +26,24 @@ public interface ChatMapper {
   
   // 메시지 데이터 넣기
   int insertChatMessage(MessageDto message);
-  // 메시지 사용자별 읽음 여부 넣기
-  int insertMessageReadStatus(Map<String, Object> map);
-  
+
   // 채팅 내역 가져오기
   List<MessageDto> getChatMessageList(Map<String, Object> map);
+
   // 채팅 메시지 개수 가져오기
   int getChatMessageCount(int chatroomNo);
+
   // 채팅방 목록 가져오기
   List<ChatroomDto> getChatList(int employeeNo);
+
   // 채팅방 참여자 수 가져오기
   int getChatroomParticipantCount(int chatroomNo);
+
   // 채팅방 참여자 번호 리스트
   List<ChatroomParticipateDto> getChatroomParticipantList(int chatroomNo);
   
   // 채팅방 타입 변경
-  int updateChatroomType(Map<String, Object> map);
+  void updateChatroomType(Map<String, Object> map);
   
   // 채팅방 번호 - 채팅방 데이터 가져오기
   ChatroomDto getChatroomByChatroomNo(int chatroomNo);
@@ -52,10 +55,10 @@ public interface ChatMapper {
   int deleteParticipant(Map<String, Object> map);
   
   // 채팅방 참여자가 0명인 채팅방 삭제
-  int deleteNoParticipateChatroom();
+  void deleteNoParticipateChatroom();
   
   // 채팅방 참여자가 0명인 채팅방 메시지 삭제
-  int deleteNoParticipateMessage();
+  void deleteNoParticipateMessage();
   
   // 채팅방 이름 수정
   int updateChatroomTitle(Map<String, Object> map);

@@ -17,11 +17,7 @@ public class CustomHandshakeHanlder extends DefaultHandshakeHandler {
   protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler,
       Map<String, Object> attributes) {
     
-    // 수정하기!!
     String employeeNo = UriComponentsBuilder.fromUri(request.getURI()).build().getQueryParams().getFirst("employeeNo");
-    System.out.println("Handshake employeeNo: " + employeeNo);
-    
-    //String sessionId = UUID.randomUUID().toString();
     return new CustomPrincipal("user-" + employeeNo);
     
   }
