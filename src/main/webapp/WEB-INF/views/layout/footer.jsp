@@ -18,15 +18,29 @@
   // 전역 stomp 클라이언트 설정
   let globalStompClient;
   
-  const fnConnectGlobalStompClient = () => {
-	  let employeeNo = ${sessionScope.user.employeeNo};
-	  let globalSocket = new SockJS("/ws-stomp?employeeNo=" + employeeNo);
-	  globalStompClient = Stomp.over(globalSocket); // STOMP 클라이언트 객체 저장
-	  
+  const fnConnectGlobalStompClient = () => { // 페이지 로드 되자마자 실행됨.
+
+    let employeeNo = ${sessionScope.user.employeeNo}; // 세션에서 직원 번호 가져온다.
+
+    // SockJS는 일반 웹소켓을 지원하지 않는 브라우저에서도 동작할 수 있도록 도와주는 라이브러리이다.
+    // 서버에서 제공하는 웹소켓 엔드포인트인 /ws-stomp로 연결을 시도한다.
+    // 쿼리 파라미터에서 employeeNo를 붙여서 사용자 번호를 전달함으로써 서버가 누구인지 식별할 수 있도록 한다.
+    let globalSocket = new SockJS("/ws-stomp?employeeNo=" + employeeNo);
+
+    // STOMP 클라이언트 객체 저장
+    // STOMP는 웹소켓에서 메시지를 주고받기 위한 프로토콜이다.
+    // Stomp.over(globalSocket)을 사용하면 SockJS를 기반으로 STOMP를 사용할 수 있게 된다.
+    // STOMP 프레임워크를 활용해서 메시지를 주고받을 수 있다.
+    globalStompClient = Stomp.over(globalSocket);
+
+      // 웹소켓 연결 - connect()메소드 활용해서 웹소켓 연결 시도
 	  globalStompClient.connect({}, (frame) => {
 		  
 		  console.log("Connected:", frame);
-		  globalStompClient.subscribe('/user/queue/notifications', (notification) => { // notification은 수신된 메시지를 가리키는 객체
+		  globalStompClient.subscribe('/user/queue/notifications', (notification) => {
+            // 위 코드는 특정 주제(topic)인 /user/queue/notifications를 구독한다.
+            // 서버가 /user/queue/notifications로 알림 보내면 해당 메시지 받을 수 있다.
+            // notification은 수신된 메시지를 가리키는 객체(서버가 보낸 메시지)
 			  
 			  const message = JSON.parse(notification.body);
 			  fnShowAlert(message);

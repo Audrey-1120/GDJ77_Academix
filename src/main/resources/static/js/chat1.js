@@ -398,8 +398,8 @@
 	
 		// STOMP 연결
 	const fnConnect = (chatroomType) => {
-		let employeeNo = currentEmployeeNo;
-	    let socket = new SockJS("/ws-stomp?employeeNo=" + employeeNo);
+		let employeeNo = currentEmployeeNo; // 현재 직원번호 가져옴.
+	    let socket = new SockJS("/ws-stomp?employeeNo=" + employeeNo); // 웹소켓 객체 연결
 	    stompClient = Stomp.over(socket);
 	
 	    // 구독 정보를 저장할 객체 초기화
@@ -419,8 +419,8 @@
 	        } */
 	
 	        // 새로운 채팅방 번호 저장
-	        currentChatroomNo = chatroomNo;
-	        currentChatroomType = chatroomType;
+	        currentChatroomNo = chatroomNo; // 현재 채팅방 번호 저장
+	        currentChatroomType = chatroomType; // 1:1인지 단체인지
 	        
 	        // 저장된 채팅 불러오기
 	        fnGetChatMessage(chatroomNo);  // (2)
@@ -432,6 +432,7 @@
 	            const message = JSON.parse(chatroomMessage.body);
 	
 	            if (message.messageType === 'UPDATE') {
+					// update인 경우 채팅방 멤버가 방에 참여했는지를 업데이트하는 메시지.
                   fnUpdateParticipateStatus(message); // status 관련 UPDATE 메시지 받으면 바로 탭 바꿔주는 함수.
 	            } else {
                   // 받은 메시지 보여주기
@@ -632,7 +633,7 @@
 	// 프론트에 있는 유저 데이터 가져오기
 	const getEmployeeData = (employeeNo) => {  // (12) - 함수 생성
 		
-		const input = $('input[data-employee-no=' + employeeNo + ']');
+	  const input = $('input[data-employee-no=' + employeeNo + ']');
 	  if (input.length > 0) {
 	    const employeeName = input.attr('data-employee-name');
 	    const profilePicturePath = input.attr('data-employee-profilePicturePath');

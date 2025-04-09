@@ -50,7 +50,8 @@ public class ChatController {
   public ResponseEntity<Map<String, Object>> insertNewOneToOneChatroom(@RequestBody Map<String, Object> params) {
     return chatService.addOneToOneChatroom(params);
   }
-  
+
+  // 새로운 채팅방 멤버 초대
   @PostMapping(value="/insertNewParticipateList.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> insertNewParticipateList(@RequestBody Map<String, Object> params) {
     return ResponseEntity.ok(Map.of("insertNewParticipate", chatService.insertNewParticipateList(params)));

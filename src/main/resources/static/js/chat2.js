@@ -99,12 +99,13 @@
  	const fnShowChatMessage = (chatMessage) => {
  		
  		// 기본적으로 채팅 메시지 가져올때는 prepend로 앞에다 붙여주는데 메시지 보냈을 때는 끝에 붙여줘야 하니까..
- 		
+
+
+		// 채팅방 메시지의 타입은 CHAT(일반 메시지), LEAVE(탈퇴), ADD(초대)
  		if(chatMessage.messageType === 'CHAT') {
  			
- 			if(chatMessage.senderNo === currentEmployeeNo) { 
- 				// 내가 보낸 메시지인 경우,
- 				 		
+ 			if(chatMessage.senderNo === currentEmployeeNo) { // 보낸 메시지의 경우 css 다르게 처리
+
  	 		  // 메시지 작성자의 번호를 통해 input 데이터 가져오기
  	 		  const senderData = getEmployeeData(chatMessage.senderNo);
  				
