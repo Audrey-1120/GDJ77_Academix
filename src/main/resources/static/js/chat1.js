@@ -37,7 +37,6 @@ const fnShowChatList = () => {
 	let memberIcon = $('.box-title-choice i');
 	let chatMemberContainer = $('.chat-member');
 	let addChatroomBtn = $('.addChatroomBtn-cover');
-	let searchInput = $('.searchInput-cover');
 
 	memberIcon.eq(0).on('click', () => {
 
@@ -51,7 +50,7 @@ const fnShowChatList = () => {
 
 		$('.chat-member .chat-member-title').remove();
 
-		searchInput.remove();
+		$('.searchInput-cover').remove();
 		$('.chat-member #memberArea').remove();
 		fnGetChatUserList();
 
@@ -62,10 +61,10 @@ const fnShowChatList = () => {
 		addChatroomBtn.css('display', 'none');
 		chatMemberContainer.empty();
 
-		memberIcon.eq(0).css('color', '#B5B5B5');
-		memberIcon.eq(1).css('color', 'black');
+		memberIcon.eq(0).removeClass('selected-icon');
+		memberIcon.eq(1).addClass('selected-icon');
 
-		searchInput.remove();
+		$('.searchInput-cover').remove();
 		title.text('채팅 목록');
 
 		chatMemberContainer.append('<ul class="contacts-list"></ul>');

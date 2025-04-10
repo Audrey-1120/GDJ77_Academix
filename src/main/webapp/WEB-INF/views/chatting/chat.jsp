@@ -47,7 +47,7 @@
       <div class="box member-box">
          <div class="box-header with-border">
 	         <div class="box-title-choice">
-	           <i class="fa fa-user" style="cursor: pointer;"></i>
+	           <i class="fa fa-user selected-icon" style="cursor: pointer;"></i>
 	           <i class="fa fa-comment" style="cursor: pointer;"></i>
 	         </div>
 

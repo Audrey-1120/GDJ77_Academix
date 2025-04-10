@@ -2,7 +2,7 @@
 
 
 .selected-icon {
-  color: black;
+  color: black !important;
 }
 
 .employee-profile {
@@ -161,7 +161,7 @@ table {
 }
 
 /* 두번째 채팅 아이콘 */
-.box-title-choice i:nth-child(2) {
+.box-title-choice i {
   color: #B5B5B5;
 }
 
