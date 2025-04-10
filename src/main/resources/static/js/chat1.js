@@ -87,10 +87,17 @@ const fnGetChatUserList = () => {
 	.then((response) => response.json())
 	.then(resData => {
 
+		// 빈 배열 생성
 		let jstreeData = [];
+		
+		// 부서 조회
 		let departments = resData.departments;
+		
+		// 직원 조회
 		let employees = resData.employee;
 
+		// Academix root node로 추가하기
+		// root node는 부모 id가 #이어야 함.
 		let com = departments.find(depart => depart.departName === 'Academix');
 		if(com) {
 			jstreeData.push({
@@ -101,6 +108,7 @@ const fnGetChatUserList = () => {
 			});
 		}
 
+		// 직원데이터에서 대표이사만 빼서 추가
 		let ceo = employees.find(employee => employee.rank.rankTitle === '대표이사');
 		if(ceo) {
 			jstreeData.push({
@@ -111,6 +119,7 @@ const fnGetChatUserList = () => {
 			});
 		}
 
+		// 부서 돌면서 추가해주기(이때 회사명 제외)
 		departments.forEach(function(department) {
 			if(department.departName !== 'Academix'){
 				jstreeData.push({
@@ -122,9 +131,10 @@ const fnGetChatUserList = () => {
 			}
 		});
 
+		// 직원 돌면서 추가
 		employees.forEach(function(employee) {
-			if(employee.depart.departmentNo !== 0 && employee.employeeStatus !== 0){
-				if(employee.rank.rankNo === 5) {
+			if(employee.depart.departmentNo !== 0 && employee.employeeStatus !== 0){ // 부서번호가 0이 아니고, 재직중인 직원만
+				if(employee.rank.rankNo === 5) { // 직급이 5인 경우는 강사이므로 icon 다르게
 					jstreeData.push({
 					id: 'emp_' + employee.employeeNo,
 					parent: employee.depart.departmentNo.toString(),
@@ -142,28 +152,30 @@ const fnGetChatUserList = () => {
 			}
 		});
 
+		
 		$('#memberArea').jstree({
 		'core': {
-			'data': jstreeData,
+			'data': jstreeData, // 트리에 들어갈 데이터 지정
 			'themes': {
-				'icons': true
+				'icons': true // 아이콘 보이게
 			}
 		},
-		'plugins': ['search', 'checkbox'],
+		'plugins': ['search', 'checkbox'], // 트리 내에서 검색 가능하게끔 search, checkbox는 각 노드옆에 표시하게
 		'checkbox': {
-			'keep_selected_style': true,
-			'three_state': false,
-			'whole_node' : false,
-			'tie_selection' : false,
-			'cascade': 'down'
+			'keep_selected_style': true, // 체크된 노드에 스타일 유지
+			'three_state': false, // 자식 체크 시 부모 자동으로 체크되지 않게 함.
+			'whole_node' : false, // 체크박스를 눌러야 체크됨.(텍스트 클릭시 X)
+			'tie_selection' : false, // 체크 상태 & 선택 상태 분리
+			'cascade': 'down' // 부모 체크 시 자식 노드 자동 체크(위로는 안감)
 		}
 		}).on('ready.jstree', function() {
-			$(this).jstree(true).open_all();
+			$(this).jstree(true).open_all(); // 처음부터 조직도 다 보이도록
 		});
 
-		$('.searchInput').on('keyup', function() {
+		// 검색 설정
+		$('.searchInput').on('keyup', function() { 
 			let searchString = $(this).val();
-			$('#memberArea').jstree('search', searchString);
+			$('#memberArea').jstree('search', searchString); // 검색 플러그인을 사용해서 검색어로 직원명 검색
 		});
 
 	})
@@ -179,15 +191,18 @@ const fnGetProfile = () => {
 
 $('#memberArea').bind('select_node.jstree', function(event, data) {
 
+	// 선택된 노드 가져온다.
 	let selectedNode = data.node;
 	let employeeNo;
 
+	// 직원을 선택한 경우(emp로 시작함.)
 	if(selectedNode.id.includes('emp_')) {
-		employeeNo = selectedNode.id.replace('emp_', '');
+		employeeNo = selectedNode.id.replace('emp_', ''); // 선택한 직원번호 가져오기
 	} else {
 		return;
 	}
 
+	// 해당 직원 번호로 직원 프로필 조회
 	fetch('/user/getUserProfileByNo.do?employeeNo=' + employeeNo,{
 		method: 'GET',
 	})
@@ -202,9 +217,9 @@ $('#memberArea').bind('select_node.jstree', function(event, data) {
 
 			let profilePicturePath = '';
 			if (employee.profilePicturePath) {
-				const match = employee.profilePicturePath.match(/src="([^"]+)"/);
+				const match = employee.profilePicturePath.match(/src="([^"]+)"/); // URL 부분만 추출한다.
 				if (match && match[1]) {
-					profilePicturePath = match[1];
+					profilePicturePath = match[1]; // URL 부분만 저장
 				}
 			}
 
@@ -241,17 +256,18 @@ const fnAddChatRoom = () => {
 
 		let chatUserNo = $('.selectUserNo').data('user-no');
 
-		if(currentEmployeeNo === chatUserNo) {
+		if(currentEmployeeNo === chatUserNo) { // 자기자신 선택하면.
 			return;
 		}
 
+		// 선택한 직원과의 1:1 채팅방이 존재하는지
 		fetch('/chatting/isOneToOneChatroomExits.do?loginUserNo=' + currentEmployeeNo + '&chatUserNo=' + chatUserNo,{
 			method: 'GET',
 		})
 		.then((response) => response.json())
 		.then(resData => {
 
-			if(resData.chatroom.chatroomNo === 0) {
+			if(resData.chatroom.chatroomNo === 0) { // 채팅방 번호가 0이면 채팅방 존재 X -> 새로 만든다!
 				fetch('/chatting/insertNewOneToOneChatroom.do', {
 					method: 'POST',
 					headers: {

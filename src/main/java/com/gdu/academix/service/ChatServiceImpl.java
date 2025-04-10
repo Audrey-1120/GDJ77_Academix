@@ -79,12 +79,15 @@ public class ChatServiceImpl implements ChatService {
   @Override
   public ResponseEntity<Map<String, Object>> addOneToOneChatroom(Map<String, Object> params) {
 
+    // 로그인한 직원번호, 선택한 직원 번호
     int loginUserNo = Integer.parseInt(String.valueOf(params.get("loginUserNo")));
     int chatUserNo = Integer.parseInt(String.valueOf(params.get("chatUserNo")));
     
+    // 프로필 가져온다.
     EmployeesDto loginUser = userMapper.getUserProfileByNo(loginUserNo);
     EmployeesDto chatUser = userMapper.getUserProfileByNo(chatUserNo);
 
+    // 새로 만들 1:1 채팅방 DTO 만들기
     ChatroomDto chatroomDto = ChatroomDto.builder()
                                   .chatroomTitle(loginUser.getName() + ", " + chatUser.getName())
                                   .chatroomType("OneToOne")
@@ -93,6 +96,7 @@ public class ChatServiceImpl implements ChatService {
     
     int insertOneToOneChatroomCount = chatMapper.insertNewChatroom(chatroomDto);
     
+    // 채팅방 참여인원 추가
     ChatroomParticipateDto chatroomParticipateDto1 = ChatroomParticipateDto.builder()
                                                               .chatroomNo(chatroomDto.getChatroomNo())
                                                               .participantNo(loginUserNo)
@@ -103,9 +107,11 @@ public class ChatServiceImpl implements ChatService {
                                                               .participantNo(chatUserNo)
                                                           .build();
     
+    // insertOneToOneParticipantCount값이 2이면 둘다 성공적으로 들어감.
     int insertOneToOneParticipantCount = chatMapper.insertNewParticipate(chatroomParticipateDto1);
     insertOneToOneParticipantCount += chatMapper.insertNewParticipate(chatroomParticipateDto2);
     
+    // 반환할 1:1채팅 데이터 조회(방금 insert한 데이터)
     Map<String, Object> map = Map.of("loginUserNo", loginUserNo, "chatUserNo", chatUserNo);
     ChatroomDto newChatroomDto = chatMapper.isOneToOneChatroomExits(map);
     
