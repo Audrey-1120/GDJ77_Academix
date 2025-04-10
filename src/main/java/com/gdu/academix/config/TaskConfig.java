@@ -11,10 +11,12 @@ import com.gdu.academix.scheduler.RemoveTempFilesScheduler;
 @EnableScheduling
 @Configuration
 public class TaskConfig {
+
 	@Bean
 	RemoveBlogImageScheduler removeBlogImageTask() {
 		return new RemoveBlogImageScheduler();
 	}
+
 	@Bean
 	RemoveTempFilesScheduler removeTempFileTask() {
 		return new RemoveTempFilesScheduler();
