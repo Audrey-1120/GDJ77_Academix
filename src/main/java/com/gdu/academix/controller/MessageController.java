@@ -10,7 +10,6 @@ import com.gdu.academix.service.NotifyService;
 import com.gdu.academix.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -39,22 +38,24 @@ public class MessageController {
   // 1:1
   @MessageMapping("/one/{chatroomNo}")
   @SendTo("/queue/{chatroomNo}")
-  public MessageDto OneToOneChat(@DestinationVariable int chatroomNo, MessageDto message) {
+  public MessageDto OneToOneChat(MessageDto message) {
     
     try {
+
       MessageType messageType = message.getMessageType();
 
-      if(messageType.equals(MessageType.CHAT)) {
+      if(messageType.equals(MessageType.CHAT)) { // 일반 메시지 전송
 
         Map<String, Object> map = chatService.insertChatMessage(message);
         return (MessageDto) map.get("chatMessage");
         
-      } else if(messageType.equals(MessageType.LEAVE)){
+      } else if(messageType.equals(MessageType.LEAVE)) { // 퇴장 메시지일 경우
 
         return message;
 
-      } else if(messageType.equals(MessageType.UPDATE)){
+      } else if(messageType.equals(MessageType.UPDATE)) { // 상태 접속 메시지일 경우
 
+        // participateStatus 값은 1혹은 0이다.
         Map<String, Object> params = Map.of("chatroomNo", message.getChatroomNo(),
                                             "participantNo", message.getSenderNo(),
                                             "participateStatus", Integer.parseInt(message.getMessageContent()));
@@ -77,7 +78,7 @@ public class MessageController {
   // 단체
   @MessageMapping("/group/{chatroomNo}")
   @SendTo("/topic/{chatroomNo}")
-  public MessageDto GroupChat(@DestinationVariable int chatroomNo, MessageDto message) {
+  public MessageDto GroupChat(MessageDto message) {
     
     try {
 
@@ -119,26 +120,28 @@ public class MessageController {
   }
 
   @MessageMapping("/notify")
-  public void notifyUser(MessageDto message, CustomPrincipal customPrincipal) {
+  public void notifyUser(MessageDto message) {
     
     if(message.getRecipientNoList() == null) {
       message.setRecipientNoList(new ArrayList<>());
     }
 
+    // 중복 제거
     Set<Integer> recipientNoSet = new HashSet<>(message.getRecipientNoList());
 
-    int notifierNo = message.getSenderNo();
-    EmployeesDto employee = userService.getUserProfileByNo(notifierNo);
+    // 메시지 송신자 번호
+//    int notifierNo = ;
+//    EmployeesDto employee = userService.getUserProfileByNo(notifierNo);
 
     for(Integer recipientNo : recipientNoSet) {
-      if(!recipientNo.equals(message.getSenderNo())) {
+      if(!recipientNo.equals(message.getSenderNo())) { // 채팅방 참여 인원 중 송신자 번호는 제외
 
         try {
 
           String messageContent = message.getMessageContent();
           String result;
 
-          if (messageContent.length() > 20) {
+          if (messageContent.length() > 20) { // 알림창에 보여지는 메시지 미리보기는 20자까지
               result = messageContent.substring(0, 20) + "...";
           } else {
               result = messageContent;
@@ -147,17 +150,22 @@ public class MessageController {
           NotificationsDto notification = NotificationsDto.builder()
                                                  .message(result)
                                                  .notificationType("CHAT")
-                                                 .notifierNo(notifierNo)
-                                                 .seenStatus(0)
-                                                 .employeeNo(recipientNo)
-                                                 .chatroomNo(message.getChatroomNo())
+                                                 .notifierNo(message.getSenderNo())
+                                                 .seenStatus(0) // 확인 여부
+                                                 .employeeNo(recipientNo) // 받는 직원 번호
+                                                 .chatroomNo(message.getChatroomNo()) // 채팅방 번호
                                                .build();
 
           int insertNotificationCount = notifyService.insertNotification(notification);
 
+          // 아직 안읽은 알림 리스트 조회
           List<NotificationsDto> notificationList = notifyService.getNotificationList(recipientNo);
 
+          // CustomUserPrincipal - employeeNo
           String username = "user-" + recipientNo;
+
+          // username에 CustomUserPrincipal의 employeeNo에 저장한 이름 추가
+          // /queue/notifications
           messagingTemplate.convertAndSendToUser(username, "/queue/notifications", notificationList.get(0));
 
         } catch (Exception e) {

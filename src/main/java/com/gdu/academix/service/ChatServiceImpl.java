@@ -40,22 +40,26 @@ public class ChatServiceImpl implements ChatService {
   // 메시지 데이터 저장
   @Override
   public Map<String, Object> insertChatMessage(MessageDto message) {
-    
+
+    // 띄어쓰기 부분 <br> 태그로 변환
     String replaceMessageContent = message.getMessageContent().replace("\n", "<br>").replace("\r\n", "<br>");
-    
+
+    // 메시지 객체 생성
     MessageDto chatMessage = MessageDto.builder()
                                   .messageType(message.getMessageType())
                                   .messageContent(replaceMessageContent)
                                   .chatroomNo(message.getChatroomNo())
                                   .senderNo(message.getSenderNo()) 
                                 .build();
-    
+
+    // 메시지 추가
     int insertMessageCount = chatMapper.insertChatMessage(chatMessage);
-    
+
+    // 메시지 추가 후 현재 시각으로 세팅
     long currentTimeMillis = System.currentTimeMillis();
     Timestamp currentTimestamp = new Timestamp(currentTimeMillis); 
     chatMessage.setSendDt(currentTimestamp);
-    
+
     return Map.of("insertMessageCount", insertMessageCount,"chatMessage", chatMessage);
 
   }

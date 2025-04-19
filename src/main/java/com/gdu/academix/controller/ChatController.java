@@ -50,7 +50,6 @@ public class ChatController {
   // 채팅 내역 가져오기
   @GetMapping(value="/getChatMessageList.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> getChatMessageList(@RequestParam int chatroomNo, @RequestParam int page) {
-    System.out.println("chatMessageList" + chatService.getChatMessageList(chatroomNo, page));
     return chatService.getChatMessageList(chatroomNo, page);
   }
   

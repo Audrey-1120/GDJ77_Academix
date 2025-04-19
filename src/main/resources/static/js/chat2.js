@@ -13,6 +13,8 @@ const fnGetChatMessage = (chatroomNo) => {
 	.then(resData => {
 
 		chatMessageTotalPage = resData.chatMessageTotalPage;
+
+		// 메시지 리스트를 받아오면
 		const chatMessageList = resData.chatMessageList.reverse();
 
 		if (chatMessageList.length > 0) {
@@ -68,8 +70,8 @@ const fnOpenChatroom = (chatroomDto) => {
 	let chatMessageBody = $('.chatMessage-body');
 	chatMessageBody.empty();
 
-	fnDisconnect(currentChatroomType, currentChatroomNo);
-	fnConnect(chatroomDto.chatroomType);
+	fnDisconnect(currentChatroomType, currentChatroomNo); // 기존에 채팅방 연결 끊기
+	fnConnect(chatroomDto.chatroomType); // 채팅방 다시 연결
 
 }
 
@@ -189,19 +191,25 @@ const fnChatMessageScrollHandler = () => {
 // 채팅 목록 가져오기
 const fnGetChatList = (employeeNo) => {
 
+	// 기존 채팅 목록 초기화
 	$('.contacts-list').empty();
 
+	// 새로운 메시지 아직 안읽은 채팅방은 표시해줘야 하기 때문에
+	// 알림창의 채팅방 번호만 받아온다.
 	let beforeChatroomNoList = $('.alert-menu > .notification-item').map(function() {
 		return $(this).data('chatroom-no');
 	}).get();
 
+	// 채팅방 번호 중복 제거
 	let chatroomNoList = [...new Set(beforeChatroomNoList)];
 
+	// 채팅방 목록 받아오기
 	fetch('/chatting/getChatList.do?employeeNo=' + employeeNo, {
 		method: 'GET',
 	})
 	.then((response) => response.json())
 	.then(resData => {
+
 
 		$.each(resData.chatroomList, (i, chatroom) => {
 
@@ -213,7 +221,7 @@ const fnGetChatList = (employeeNo) => {
 			msg += '      <span class="contacts-list-name" style="font-size: 15px; font-weight: 500;">' + chatroom.chatroomTitle;
 			msg += '  			<input type="hidden" class="chatroom-info" data-chatroom-no=' + chatroom.chatroomNo + ' data-creator-no=' + chatroom.creatorNo + ' data-chatroom-type=' + chatroom.chatroomType + ' data-chatroom-createdDate=' + chatroom.chatroomCreatedDate + ' data-chatroom-participantCount=' + chatroom.participantCount + '>';
 			msg += '        <small class="contacts-list-date pull-right">' + chatroom.participantCount + '</small>';
-			if(chatroomNoList.includes(chatroom.chatroomNo)) {
+			if(chatroomNoList.includes(chatroom.chatroomNo)) { // 새 메시지 도착한 채팅방만 원 표시 추가
 				msg += '        <i class="fa fa-circle" style="color: darkorange;font-size: 8px;vertical-align: top;"></i>';
 			}
 			msg += '      </span>';

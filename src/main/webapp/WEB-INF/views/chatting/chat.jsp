@@ -167,8 +167,8 @@
       <div class="box chat-box" style="display: none">
         <div class="box-header with-border">
           <div class="chat-box-title">
-						<span>채팅방 이름</span>
-						<span>2</span>
+                <span>채팅방 이름</span>
+                <span>2</span>
           </div>
           <div class="box-tools pull-right">
 	          <div class="dropdown">

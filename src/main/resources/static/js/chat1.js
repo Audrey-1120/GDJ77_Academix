@@ -1,11 +1,16 @@
 
 let stompClient = null;
+
+// 기존 채팅방 번호 및 타입(1:1 혹은 단체) 저장
+// 새 채팅방 접속 시 기존 연결 끊기 위함.
 let currentChatroomNo = null;
 let currentChatroomType = null;
 
+// 페이징
 let page = 1;
 let chatMessageTotalPage = 0;
-let gChatroomNo = 0;
+let gChatroomNo = 0; // 페이지 별로 메시지 데이터 조회할 때 현 채팅방 번호 필요
+
 
 let gPreviousDate = null;
 
@@ -273,7 +278,7 @@ const fnAddChatRoom = () => {
 					headers: {
 					"Content-Type": "application/json",
 					},
-					body: JSON.stringify({
+					body: JSON.stringify({ // 현재 로그인한 유저의 번호와 선택한 직원 번호
 						loginUserNo: currentEmployeeNo,
 						chatUserNo: chatUserNo
 					})
@@ -283,27 +288,27 @@ const fnAddChatRoom = () => {
 
 					gChatroomNo = resData.chatroom.chatroomNo;
 
-					if(resData.insertOneToOneCount === 1) {
+					if(resData.insertOneToOneCount === 1) { // 방 생성 성공한 경우
 
-						let employeeList = [currentEmployeeNo, chatUserNo];
+						let employeeList = [currentEmployeeNo, chatUserNo]; // 1:1 이니까 상대직원번호, 현재 로그인한 유저 번호
 						let chatBox = $('.chat-body');
 
 						fetchSenderUserData(employeeList);
-						fnOpenChatroom(resData.chatroom);
-						chatBox.scrollTop(chatBox.prop('scrollHeight'));
+						fnOpenChatroom(resData.chatroom); // 채팅방 열기
+						chatBox.scrollTop(chatBox.prop('scrollHeight')); // 스크롤 맨 아래로 세팅
 
 					} else {
 						alert('새로고침 해주세요..1:1 방 만들기 실패');
 					}
 				})
 
-			} else {
+			} else { // 기존 채팅방 존재하는 경우
 
 				gChatroomNo = resData.chatroom.chatroomNo;
 				let employeeList = [currentEmployeeNo, chatUserNo];
 
-				fetchSenderUserData(employeeList);
-				fnOpenChatroom(resData.chatroom);
+				fetchSenderUserData(employeeList); // 채팅방 유저 데이터 가져와서 미리 세팅
+				fnOpenChatroom(resData.chatroom); // 채팅방 열기
 			}
 		})
 		.catch(error => {
@@ -316,40 +321,59 @@ const fnAddChatRoom = () => {
 const fnConnect = (chatroomType) => {
 
 	let employeeNo = currentEmployeeNo;
+
+	// /ws-stomp : 서버에서 웹소켓 연결 처리하는 url
+	// employeeNo : employeeNo로 식별한다.
 	let socket = new SockJS("/ws-stomp?employeeNo=" + employeeNo);
 
+	// SockJS 객체를 STOMP에서 사용할 기본 소켓으로 설정한다.
+	// stompClient는 SockJS를 통해서 서버와 통신한다.
 	stompClient = Stomp.over(socket);
 
-	if (!stompClient.subscriptionPaths) {
-		stompClient.subscriptionPaths = {};
+	if (!stompClient.subscriptionPaths) { // stompClient안에 구독하고 있는 경로가 없는 경우,
+		stompClient.subscriptionPaths = {}; // 빈 객체로 초기화한다.
 	}
 
-	stompClient.connect({}, (frame) => {
+	stompClient.connect({}, (frame) => { // STOMP 서버에 연결 시도
 
-		let chatroomNo = $('.chat-box-title').data('chatroom-no');
+		let chatroomNo = $('.chat-box-title').data('chatroom-no'); // 채팅방 번호
+
+		// 연결 끊을 때 사용할 채팅방 번호와 타입 저장
 		currentChatroomNo = chatroomNo;
 		currentChatroomType = chatroomType;
+
+		// 채팅 메시지 내역 조회
 		fnGetChatMessage(chatroomNo);
 
+		// 구독 경로 정리
 		const subscriptionPath = chatroomType === 'OneToOne' ? '/queue/' + chatroomNo : '/topic/' + chatroomNo;
-		const subscription = stompClient.subscribe(subscriptionPath, (chatroomMessage) => {
+
+		// stompClient.subscribe(메시지 수신 위치(구독 경로), 콜백 함수)
+		const subscription = stompClient.subscribe(subscriptionPath, (chatroomMessage) => { // chatroomMessage는 서버에서 전송된 메시지 객체
+
+			// 메시지 도착하면 메시지 내용 JSON으로 파싱
 			const message = JSON.parse(chatroomMessage.body);
 
-			if (message.messageType === 'UPDATE') {
+			// 메시지 type에 따라서...
+			if (message.messageType === 'UPDATE') { // update인 경우, 상태 관리 업데이트
 				fnUpdateParticipateStatus(message);
-			} else {
+			} else { // ADD, CHAT, LEAVE, JOIN인 경우 메시지 표시
 				fnShowChatMessage(message);
 			}
 		});
 
-		if (!stompClient.subscriptionPaths) {
-			stompClient.subscriptionPaths = {};
-		}
+		// subscriptionPath를 key로 해서 subscription 객체를 값으로 저장한다.
+		// 이 때 저장되는 subscription는 stompClient.subscribe() 메소드가 반환한 subscription 객체이다.
+			// 구독 ID, 구독 경로, 콜백 함수, unsubscribe() 메소드(구독 취소)
 		stompClient.subscriptionPaths[subscriptionPath] = subscription;
 
+		// sendPath는 클라이언트 -> 서버로 메시지 보내는 경로
 		setTimeout(() => {
+
+			// 1:1이면 /send/one, 단체채팅이면 /send/group으로 메시지 전송
 			const sendPath = chatroomType === 'OneToOne' ? '/send/one/' + chatroomNo : '/send/group/' + chatroomNo;
 
+			// sendPath 경로로 지정해서 chatroomNo, messageType, messageContent, senderNo
 			stompClient.send(sendPath, {},
 				JSON.stringify({
 					'chatroomNo': chatroomNo,
@@ -366,17 +390,24 @@ const fnConnect = (chatroomType) => {
 
 const fnDisconnect = (chatroomType, chatroomNo) => {
 
-	if (stompClient !== null) {
+	if (stompClient !== null) { // stompClient 객체 있을 경우에만
 
+		// 1:1 채팅인 경우 type = OneToONe, /queue/chatroomNo
+		// 단체 채팅인 경우 type = Group, /topic/chatroomNo
 		const subscriptionPath = chatroomType === 'OneToOne' ? '/queue/' + chatroomNo : '/topic/' + chatroomNo;
 
 		if (stompClient.subscriptionPaths && stompClient.subscriptionPaths[subscriptionPath]) {
-			stompClient.subscriptionPaths[subscriptionPath].unsubscribe();
+			stompClient.subscriptionPaths[subscriptionPath].unsubscribe(); // 구독 취소
+
+			// delete 연산자는 JS에서 객체의 속성을 삭제하는 데 사용한다.
+			// 이때 subscriptionPath 객체에 null 혹은 undefined를 할당하는 것이 아닌 객체 자체를 삭제한다.
 			delete stompClient.subscriptionPaths[subscriptionPath];
 		}
 
+		// sendPath = 1:1이면 /send/one, 채팅이면 /send/group으로 퇴장 메시지 전송
 		const sendPath = chatroomType === 'OneToOne' ? '/send/one/' + chatroomNo : '/send/group/' + chatroomNo;
 
+		// 채팅방 껐으므로 접속 상태 0으로 변경
 		stompClient.send(sendPath, {},
 			JSON.stringify({
 				'chatroomNo': chatroomNo,
@@ -394,7 +425,7 @@ const fnDisconnect = (chatroomType, chatroomNo) => {
 
 window.addEventListener('beforeunload', function(event) {
 	fnDisconnect(currentChatroomType, currentChatroomNo);
-})
+});
 
 // 메시지 전송
 const fnSendChat = () => {
@@ -409,21 +440,25 @@ const fnSendChat = () => {
 		let chatroomNo = chatBoxTitle.data('chatroom-no');
 		let chatroomType = chatBoxTitle.data('chatroom-type');
 
+		// 채팅방 접속 안하고 있는 직원 번호 리스트 - 알림메시지 보내주기
 		let offlineEmployeeNoList = [];
-		let employeeNoList = [];
+		// let employeeNoList = [];
 
+		 // 오프라인 상태의 직원 번호를 리스트에 담는다.
 		$('.participate_statusList td.status.offline').each(function() {
 			let employeeNo = $(this).closest('tr').find('td[data-employee-no]').data('employee-no');
 			offlineEmployeeNoList.push(employeeNo);
 		});
 
-		$('.chat-memberProfileList input').each(function() {
-			let employeeNo = $(this).data('employee-no');
-			if (offlineEmployeeNoList.includes(employeeNo)) {
-				employeeNoList.push(employeeNo);
-			}
-		});
+		//
+		// $('.chat-memberProfileList input').each(function() {
+		// 	let employeeNo = $(this).data('employee-no');
+		// 	if (offlineEmployeeNoList.includes(employeeNo)) {
+		// 		employeeNoList.push(employeeNo);
+		// 	}
+		// });
 
+		// 1:1 채팅 메시지 전송
 		if(chatroomType === 'OneToOne') {
 
 			stompClient.send("/send/one/" + chatroomNo, {},
@@ -431,35 +466,35 @@ const fnSendChat = () => {
 				'chatroomNo': chatroomNo,
 				'messageType': 'CHAT',
 				'messageContent': chatMessageInput.val(),
-				'senderNo': currentEmployeeNo,
-				'recipientNoList': employeeNoList
+				'senderNo': currentEmployeeNo
+				// 'recipientNoList': employeeNoList
 			}));
 
 			stompClient.send("/send/notify", {}, JSON.stringify({
 				'chatroomNo': chatroomNo,
 				'messageContent': chatMessageInput.val(),
 				'senderNo': employeeNo,
-				'recipientNoList': employeeNoList
+				'recipientNoList': offlineEmployeeNoList
 			}));
 
 			chatMessageInput.val('');
 
-		} else {
+		} else { // 단체 채팅 메시지 전송
 
 			stompClient.send("/send/group/" + chatroomNo, {},
 			JSON.stringify({
 				'chatroomNo': chatroomNo,
 				'messageType': 'CHAT',
 				'messageContent': chatMessageInput.val(),
-				'senderNo': currentEmployeeNo,
-				'recipientNoList': employeeNoList
+				'senderNo': currentEmployeeNo
+				// 'recipientNoList': employeeNoList
 			}));
 
 			stompClient.send("/send/notify", {}, JSON.stringify({
 				'chatroomNo': chatroomNo,
 				'messageContent': chatMessageInput.val(),
 				'senderNo': employeeNo,
-				'recipientNoList': employeeNoList
+				'recipientNoList': offlineEmployeeNoList
 			}));
 
 			chatMessageInput.val('');
@@ -467,6 +502,7 @@ const fnSendChat = () => {
 	}
 }
 
+// 전송 버튼 클릭 시 메시지 전송
 $('.chatMessage-btn').on('click', () => {
 	fnSendChat();
 });
@@ -540,7 +576,7 @@ const fetchSenderUserData = (senderNoList) => {
 			if (resData.profilePicturePath) {
 				const match = resData.profilePicturePath.match(/src="([^"]+)"/);
 				if (match && match[1]) {
-					profilePicturePath = match[1];
+					profilePicturePath = match[1]; // 이미지 url만 추출
 				}
 			}
 			let hiddenInputHTML = '<input type="hidden" data-employee-no="' + resData.employeeNo + '" data-employee-name="' + resData.name + ' ' + resData.rank.rankTitle + '" data-employee-profilePicturePath="' + profilePicturePath + '">';

@@ -25,7 +25,6 @@
 	  
 	  globalStompClient.connect({}, (frame) => {
 		  
-		  console.log("Connected:", frame);
 		  globalStompClient.subscribe('/user/queue/notifications', (notification) => { // notification은 수신된 메시지를 가리키는 객체
 			  
 			  const message = JSON.parse(notification.body);
@@ -192,7 +191,7 @@
    	// x 버튼 눌러서 메시지 알림 삭제
    	const fnRemoveMessageAlert = () => {
    		$(document).on('click', '.btn-removeMessageAlert', (evt) => {
-   			evt.stopPropagation();  			
+   			evt.stopPropagation();
    			// 해당 요소의 notification_no 넘겨줌
    			let notificationNo = $(evt.target).closest('.notification-item').data('notification-no');
    			let notificationNoList = [];
@@ -334,8 +333,11 @@
    	  
       // 채팅방 목록을 돌면서 해당 채팅방 번호에 해당하는 요소의 i 제거
       $('.contacts-list li').each(function(){
-    	  const $input = $(this).find('input[type="hidden"]');
-    	  if($input.data('chatroom-no') == gChatroomNo) {
+
+          let $input = $(this).find('input[type="hidden"]');
+          let $chatroomNo = $input.data('chatroom-no');
+
+    	  if($chatroomNo === gChatroomNo) {
     		  const $span = $(this).find('span.contacts-list-name');
  	        if ($span.find('i.fa-circle').length === 0) {
             $span.append('<i class="fa fa-circle" style="color: darkorange;font-size: 8px;vertical-align: top;"></i>');
